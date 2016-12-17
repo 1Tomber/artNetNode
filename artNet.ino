@@ -83,15 +83,11 @@ void artDMXReceived(unsigned char* pbuff) {
   // If there's new data, output DMX
   if ( numberOfDimmers > 0 ) {
     
-    if ( uni == 'A')
+    if ( uni == 'A') {
       for(int i = 0; i < numberOfDimmers; i++){
         pwm.setPWM(i, 0, 3 * int(data[i]));
       }
-      pwm.setPWM(4, 0, 3 * int(data[0]));   // Test Code
-      // dmxA.setChans(&pbuff[ARTNET_ADDRESS_OFFSET], numberOfDimmers);
-    
-    // if ( uni == 'B')
-      // dmxB.setChans(&pbuff[ARTNET_ADDRESS_OFFSET], numberOfDimmers);
+    }
   }
 }
 

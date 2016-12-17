@@ -59,7 +59,6 @@ void setup() {
   // Init PWM
   pwm.begin();
   pwm.setPWMFreq(60);
-  pwm.setPWM(4, 0, 150);
 
   storeInit();
   
@@ -132,7 +131,6 @@ void loop() {
   if( packetSize ) {
     eUDP.read(packetBuffer,ARTNET_BUFFER_MAX);
     int opcode = artNetOpCode(packetBuffer);
-    pwm.setPWM(4, 0, 50);
     // If DMX then get data
     if ( opcode == ARTNET_ARTDMX ) {
       artDMXReceived(packetBuffer);
