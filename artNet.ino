@@ -78,14 +78,17 @@ void artDMXReceived(unsigned char* pbuff) {
   // Number of dimmers hi byte first
   int numberOfDimmers = pbuff[16]*256 + pbuff[17];
   double pulselength;
-  uint8_t* data = &pbuff[ARTNET_ADDRESS_OFFSET];
+
+  // Collect DMX data
+  uint8_t* dmx = &pbuff[ARTNET_ADDRESS_OFFSET];
   
   // If there's new data, output DMX
   if ( numberOfDimmers > 0 ) {
-    
+    // We only need universe A for now I think. 512 is plenty. Can always add B again if we need.
     if ( uni == 'A') {
+      // For each dimmer in the dmx array set an appropriate PWM signal to the corresponding channel. Still needs to be calculated properly. Ive just used abstract values...
       for(int i = 0; i < numberOfDimmers; i++){
-        pwm.setPWM(i, 0, 3 * int(data[i]));
+        pwm.setPWM(i, 0, 3 * int(dmx[i]));
       }
     }
   }

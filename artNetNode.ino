@@ -133,6 +133,7 @@ void loop() {
     int opcode = artNetOpCode(packetBuffer);
     // If DMX then get data
     if ( opcode == ARTNET_ARTDMX ) {
+      // ------------------------------------------- This function handles our DMX - PWM control ------------------------------------------------
       artDMXReceived(packetBuffer);
 
     // If ArtPoll then send reply
