@@ -68,28 +68,31 @@ void artDMXReceived(unsigned char* pbuff) {
   // If not correct Artnet Universe
   if ( uni == 'Z' )
     return;
-    
-  #ifdef VERBOSE
-    Serial.print("Artnet Uni ");
-    Serial.print(uni);
-    Serial.println(" Received");
-  #endif
-  
+
   // Number of dimmers hi byte first
   int numberOfDimmers = pbuff[16]*256 + pbuff[17];
   double pulselength;
 
   // Collect DMX data
   uint8_t* dmx = &pbuff[ARTNET_ADDRESS_OFFSET];
+    
+  #ifdef VERBOSE
+      Serial.print("Artnet Uni ");
+    Serial.print(uni);
+    Serial.println(" Received");
+    Serial.println("DMX[0]: ");
+    Serial.println(int(dmx[0]));
+  #endif
   
   // If there's new data, output DMX
   if ( numberOfDimmers > 0 ) {
     // We only need universe A for now I think. 512 is plenty. Can always add B again if we need.
     if ( uni == 'A') {
-      // For each dimmer in the dmx array set an appropriate PWM signal to the corresponding channel. Still needs to be calculated properly. Ive just used abstract values...
-      for(int i = 0; i < numberOfDimmers; i++){
-        pwm.setPWM(i, 0, 3 * int(dmx[i]));
-      }
+      pwm.setPWM(4, 0, 3*int(dmx[0]));
+      // For each dimmer in the dmx array 3 * int(dmx[0])set an appropriate PWM signal to the corresponding channel. Still needs to be calculated properly. Ive just used abstract values...
+      //for(int i = 0; i < 16; i++){
+        //pwm.setPWM(i, 0, 3 * int(dmx[i]));
+      //}
     }
   }
 }
