@@ -15,7 +15,7 @@ If not, see http://www.gnu.org/licenses/
 #define FIRMWARE_VERSION "v1.2.0"
 
 // Uncomment the following line to enable serial debug output on Serial0
-#define VERBOSE
+//#define VERBOSE
 
 // Uncomment the following line to reload the default settings.  You need to comment out again to enable saving settings
 // #define LOAD_DEFAULTS
@@ -31,13 +31,32 @@ If not, see http://www.gnu.org/licenses/
 #include <pgmspace.h>
 #include <string.h>
 #include <Wire.h>
-#include <Adafruit_PWMServoDriver.h>
+//#include <Adafruit_PWMServoDriver.h>
 
-#include <Wire.h>
-#include <Adafruit_PWMServoDriver.h>
+#define FASTLED_ALLOW_INTERRUPTS 0
+#define FASTLED_ESP8266_NODEMCU_PIN_ORDER
+#include "FastLED.h"
+
+#include <NeoPixelBus.h>
+
+
+// How many leds in your strip?
+#define NUM_LEDS 300 
+
+// For led chips like Neopixels, which have a data line, ground, and power, you just
+// need to define DATA_PIN.  For led chipsets that are SPI based (four wires - data, clock,
+// ground, and power), like the LPD8806, define both DATA_PIN and CLOCK_PIN
+#define DATA_PIN 1
+
+#define FRAMES_PER_SECOND 4
+
+// Define the array of leds
+CRGB leds[NUM_LEDS];
+
+NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(NUM_LEDS);
 
 // called this way, it uses the default address 0x40
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+//Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 extern "C" {
   #include "user_interface.h"
@@ -57,8 +76,8 @@ void setup() {
   EEPROM.begin(512);
 
   // Init PWM
-  pwm.begin();
-  pwm.setPWMFreq(60);
+//  pwm.begin();
+//  pwm.setPWMFreq(400);
 
   storeInit();
   
@@ -101,6 +120,12 @@ void setup() {
 
   // Send ArtNet Reply
   sendArtNetReply();
+
+//FASTLED TEST tom
+
+  strip.Begin();
+  strip.Show(); // Set to black (^= off) after reset
+  
 }
 
 /************************************************************************
@@ -112,7 +137,12 @@ void setup() {
   The last thing we do is handle any web requests.
 *************************************************************************/
 
+
+/* void fadeall() { for(int i = 0; i < NUM_LEDS; i++) { leds[i].nscale8(250); } } */
+
 void loop() {
+
+  
   // Check WiFi conection
   if (standAlone != 1 && WiFi.status() != WL_CONNECTED) {
     #ifdef VERBOSE
@@ -148,4 +178,30 @@ void loop() {
   
   // Handle web requests
   webServer.handleClient();
+
+/*FASTLED TEST tom
+  static uint8_t hue = 0;
+  Serial.print("x");
+  // First slide the led in one direction
+  for(int i = 0; i < NUM_LEDS; i++) {
+    // Set the i'th led to red 
+    leds[i] = CHSV(hue++, 255, 255);
+ 
+  
+  static uint32_t fireTimer;
+  if (millis() > fireTimer + 1000 / FRAMES_PER_SECOND)
+  {
+    fireTimer = millis();
+
+    RgbColor pixel;
+    for (int i = 0; i < NUM_LEDS; i++)
+    {
+      pixel = RgbColor(leds[i].r, leds[i].g, leds[i].b);
+      strip.SetPixelColor(i, pixel);
+    }
+    strip.Show();
+  }
+  }
+    fadeall();
+  */
 }

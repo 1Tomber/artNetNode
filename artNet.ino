@@ -80,21 +80,32 @@ void artDMXReceived(unsigned char* pbuff) {
       Serial.print("Artnet Uni ");
     Serial.print(uni);
     Serial.println(" Received");
-    Serial.println("DMX[0]: ");
+    Serial.print("DMX[0]: ");
     Serial.println(int(dmx[0]));
   #endif
+
+RgbColor pixel;
+int uniadd;
   
   // If there's new data, output DMX
   if ( numberOfDimmers > 0 ) {
     // We only need universe A for now I think. 512 is plenty. Can always add B again if we need.
-    if ( uni == 'A') {
-      pwm.setPWM(4, 0, 3*int(dmx[0]));
+    if ( uni == 'A') { uniadd = 0; }
+    if ( uni == 'B') { uniadd = 150; }
+          
+      
+      //pwm.setPWM(4, 0, 3*int(dmx[0]));
       // For each dimmer in the dmx array 3 * int(dmx[0])set an appropriate PWM signal to the corresponding channel. Still needs to be calculated properly. Ive just used abstract values...
-      //for(int i = 0; i < 16; i++){
-        //pwm.setPWM(i, 0, 3 * int(dmx[i]));
-      //}
-    }
+      for(int i = 0; i < 150; i++){
+//        pwm.setPWM(i, 0, 16 * int(dmx[i]));
+        
+        pixel = RgbColor(dmx[i*3], dmx[i*3+1], dmx[i*3+2]);
+        strip.SetPixelColor(i+uniadd, pixel);
+
+      }
+    
   }
+  strip.Show();
 }
 
 
